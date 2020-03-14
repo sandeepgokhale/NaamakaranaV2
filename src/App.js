@@ -62,7 +62,116 @@ export default function App() {
       >
         Let's see
       </button>
+      <br />
+      <br />
+      <br />
+      <br />
       <h2>{name}</h2>
+      {name && <AddToDatabase name={name} />}
     </div>
   );
+}
+
+class AddToDatabase extends React.Component {
+  state = {
+    data: [],
+    loading: false,
+    error: false,
+    addButtonName: "Add as Fav [ if not there below]",
+    displayButtonName: "Display Favs",
+    addButtonStatus: false,
+    displayButtonStatus: false
+  };
+
+  showFav = () => {
+    const URL = "https://my-azure-nodejs-api.azurewebsites.net/";
+    // const URL = "https://httpbin.org/ip";
+    // fetch(URL)
+    //   .then(resp => resp.json())
+    //   .then(resp => console.log(resp));
+    this.setState({
+      displayButtonName: "Loading...",
+      displayButtonStatus: !this.state.addButtonStatus
+    });
+    fetch(URL)
+      .then(response => {
+        console.log("inside");
+        return response.json();
+      })
+      .then(data => {
+        console.log(data);
+        this.setState({
+          displayButtonName: "Display Favs",
+          data: data.results,
+          displayButtonStatus: !this.state.addButtonStatus
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  componentDidMount() {
+    this.showFav();
+  }
+
+  addAsFav = () => {
+    const URL = "https://my-azure-nodejs-api.azurewebsites.net/";
+    const data = { name: this.props.name };
+
+    if (this.state.data.includes(data.name)) return;
+
+    this.setState({
+      addButtonName: "Loading...",
+      addButtonStatus: !this.state.addButtonStatus
+    });
+    fetch(URL, {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then(data => {
+        // console.log(data);
+        this.setState({
+          addButtonName: "Add as Fav [ if not there below]",
+          data: data.results,
+          addButtonStatus: !this.state.addButtonStatus
+        });
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
+  };
+
+  render() {
+    const {
+      // displayButtonName,
+      addButtonName,
+      // displayButtonStatus,
+      addButtonStatus
+    } = this.state;
+    return (
+      <>
+        <button disabled={addButtonStatus} onClick={this.addAsFav}>
+          {addButtonName}
+        </button>
+
+        <hr />
+        <h2> Recent Favorites </h2>
+        {/* <button disabled={displayButtonStatus} onClick={this.showFav}>
+          {displayButtonName}
+        </button> */}
+        {this.state.data.map((e, i) => {
+          return (
+            <div className="App" key={e + i}>
+              {e}
+            </div>
+          );
+        })}
+      </>
+    );
+  }
 }
