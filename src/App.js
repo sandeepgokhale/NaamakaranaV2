@@ -15,7 +15,9 @@ function capitalizeFirstLetter(string) {
 const selectData = [
   { key: "stars", value: "Stars" },
   { key: "colors", value: "Colors" },
-  { key: "animals", value: "Animals" }
+  { key: "animals", value: "Animals" },
+  { key: "fruits", value: "Fruits" },
+  { key: "surprise", value: "Surprise" }
 ];
 
 function fetchRandomAdj() {
@@ -23,7 +25,7 @@ function fetchRandomAdj() {
 }
 
 function getRandomInt(abc) {
-  // console.log(abc);
+  //console.log(abc);
   // console.log(playArea[abc]);
   //console.log(playArea[abc].length);
   return Math.floor(Math.random() * Math.floor(playArea[abc].length));
@@ -50,6 +52,7 @@ export default function App() {
   return (
     <div className="App">
       <h1>Find me a name</h1>
+      Choose One :{" "}
       <select onChange={e => setSelectedItem(e.target.value.toLowerCase())}>
         {dropDownData.map((value, index) => {
           return <option key={value.key}> {value.value} </option>;
@@ -95,11 +98,9 @@ class AddToDatabase extends React.Component {
     });
     fetch(URL)
       .then(response => {
-        console.log("inside");
         return response.json();
       })
       .then(data => {
-        console.log(data);
         this.setState({
           displayButtonName: "Display Favs",
           data: data.results,
